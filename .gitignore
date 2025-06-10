@@ -1,38 +1,58 @@
-name: CI Op_Trader
+# Arquivos e pastas de ambiente/sensíveis
+.env
+.env.*
+*.env
+*.key
+*.pem
+*.crt
+*.secret
+*.token
+*.credentials
 
-on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
+# Cache e artefatos de testes
+.pytest_cache/
+**/.pytest_cache/
 
-jobs:
-  test:
-    runs-on: windows-latest
+# Bytecode Python e caches
+__pycache__/
+*/__pycache__/
+**/__pycache__/
+*.pyc
 
-    steps:
-      - name: Checkout código
-        uses: actions/checkout@v4
+# Arquivos temporários e backup
+*.swp
+*.swo
+*.bak
 
-      - name: Instalar Python 3.10
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
+# Logs e outputs locais
+logs/
+*/logs/
+**/logs/
 
-      - name: Atualizar pip
-        run: python -m pip install --upgrade pip
+# Pastas e arquivos de documentação temporária/interna
+docs/CURRENT_STRUCTURE.md
+docs/README_src_env.md
+docs/blueprint/
+docs/checklist/
+docs/flows/
+docs/templates/
 
-      - name: Instalar dependências do projeto
-        run: |
-          pip install -r requirements.txt
-          pip install pytest
+# Patches e diffs locais
+patches/
+**/patches/
 
-      - name: Rodar todos os testes Pytest
-        run: pytest -v -s
+# Arquivos grandes de outputs (caso gere localmente)
+*.csv
+*.json
+!docs/specs/*.md  # Permite specs .md, mas ignora csv/json fora da docs/specs/
 
-      # Opcional: Gera artefato com os logs de teste, caso queira baixar
-      - name: Upload logs de teste
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pytest-logs
-          path: logs/
+# Outros arquivos sensíveis ou redundantes (ajuste conforme necessidade)
+*.db
+*.sqlite
+*.h5
+*.log
+*.pkl
+
+# Ignorar arquivos locais específicos do VSCode, PyCharm etc (opcional)
+.vscode/
+.idea/
