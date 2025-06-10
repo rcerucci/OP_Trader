@@ -413,3 +413,72 @@ FAILED tests/integration/test_env_pipeline_integration.py::test_env_pipeline_ful
 ---
 
 **Bloco gerado automaticamente pelo ciclo de homologação e referência do Op\_Trader.**
+
+---
+# DEV\_LOG — Op\_Trader
+
+> Log detalhado de todas as ações de setup, configuração, correção e testes realizados no ciclo de integração do projeto Op\_Trader com ambiente Codex Web e GitHub.
+
+---
+
+## 2025-06-09/10 — Integração e Setup Avançado Op\_Trader no Codex
+
+### **1. Estruturação e Versionamento do Projeto**
+
+* Criação e validação completa do repositório Op\_Trader no GitHub.
+* Configuração do `.gitignore` para bloquear logs, arquivos sensíveis e diretórios temporários.
+* Ajuste fino do versionamento (remoção de arquivos indesejados já versionados, uso de `.gitkeep` em logs/patches).
+* Registro de todas as etapas de commit, push e sincronia.
+
+### **2. Ambiente de Desenvolvimento e CI/CD**
+
+* Definição de setup de ambiente multiplataforma: ambiente local (Windows/Conda/venv) e cloud (Codex, Ubuntu 24.04).
+* Criação do `requirements.txt` limpo: remoção de caminhos locais, correção de nomes de pacotes, padronização para PyPI puro.
+* Separação da dependência MetaTrader5 (uso apenas local/Windows).
+* Automatização do script de configuração para Codex:
+
+  * Troca para Python 3.10 via `pyenv global 3.10.17`.
+  * Criação de venv, instalação de dependências e pytest.
+  * Preparação da estrutura de pastas, uso de `.gitkeep`.
+  * Execução de debug e testes automáticos.
+* Inclusão de comentários e instruções no requirements para facilitar onboarding.
+
+### **3. Testes e Validação Automatizada**
+
+* Execução de todos os testes unitários via `pytest` local e no Codex.
+* Implementação de fluxo para geração automática de relatórios de cobertura (`pytest-cov`).
+* Todos os 86 testes passaram ("86 passed in 12.96s"), logs capturados e verificados.
+* Geração de logs/outputs de auditoria, warnings e resultados de validação.
+
+### **4. Integração com Codex Web (OpenAI)**
+
+* Criação do ambiente automatizado universal (Ubuntu 24.04) com pacote de setup customizado.
+* Implementação e ajuste do script:
+
+  * Seleção automática da versão do Python via `pyenv`.
+  * Setup venv, pip upgrade, instalação de requirements.
+  * Instalação adicional do pytest e notebook para exploração.
+  * Geração automática de diretórios/logs.
+* Comando em linguagem natural executado:
+
+  * "Execute todos os testes unitários do projeto e gere um relatório de cobertura (coverage report) em HTML."
+  * Setup limpo a cada execução/tarefa, ambiente sempre auditável.
+
+### **5. Auditoria de Dependências e Troubleshooting**
+
+* Remoção de MetaTrader5 do requirements principal após erro de instalação no Linux/cloud.
+* Troca de nomes errados (importlib\_metadata, etc) para nomes válidos PyPI.
+* Registro e resolução de problemas típicos: permissões, pip, venv, pyenv, limitações de SO.
+* Comentários exemplificativos incluídos no requirements.txt para dependências opcionais e notas de compatibilidade (ex: MT5 em Windows).
+
+### **6. Onboarding, Governança e Próximos Passos**
+
+* Registro de todas as etapas do processo no DEV\_LOG e README.
+* Sugestão de primeira tarefa para o Codex: explorar comandos em linguagem natural e automação de relatórios de cobertura e diagnóstico de pipeline.
+* Pipeline pronto para testes, automações, criação de notebooks, experimentos, documentação viva e integração CI/CD.
+
+---
+
+**Status:** Integração Op\_Trader (GitHub + Codex Web) 100% validada, ambiente reprodutível, automatizado e auditável.
+
+---
