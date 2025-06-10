@@ -1,14 +1,27 @@
-# PositionManager — Technical Specification (SPEC.md)
+# - Como criar o documeto SPEC definitivo
+
+> ⚠️ **Fixar o padrão “mais completo possível” como baseline:**
+
+Nunca entregar apenas o mínimo, mas sempre trazer todas as validações, limitações, integrações pipeline, exemplos multi-cenário, tipos, edge cases, comportamento de terceiros (pandas/numpy), e detalhar toda a tabela de entradas/saídas como “esperado para produção”.
+
+Checklist sempre preenchido e histórico detalhado, mesmo quando ainda pendente de revisão.
+
+Benchmarks reais e integração como default, não como exceção.
+
+---
+
+# [NomeDoModulo] — Especificação Técnica (SPEC.md)
+
+> ⚠️ **IMPORTANTE**: Este template deve ser preenchido **APÓS** a implementação do código estar completa. Validar constantemente contra o código real durante o preenchimento.
 
 ## Docstring Padrão do Projeto
 
 ```python
 """
-src/env/env_libs/execution/position_manager.py
-Gerenciamento de posições (abertura, modificação e encerramento) para ambientes de reforço em trading no sistema Op_Trader.
-Compatível com múltiplos ativos (multimercado), incluindo precisão variável de preço por símbolo.
-Autor: Developers Team
-Data: 2025-06-04
+src/[caminho]/[nome_do_modulo].py
+[Descrição concisa do módulo e sua responsabilidade no sistema Op_Trader]
+Autor: Equipe Op_Trader
+Data: [YYYY-MM-DD]
 """
 ```
 
@@ -16,249 +29,391 @@ Data: 2025-06-04
 
 ## 1. Objetivo
 
-Este módulo é responsável pelo **gerenciamento completo de posições de trading**, sendo utilizado no **pipeline de execução** para **controlar abertura, modificação e encerramento de posições** em ambientes de trading automatizado. Integra-se com **RiskManager, Logger e State** e serve como **componente central de execução** no sistema Op_Trader.
+[Descrição clara do propósito e responsabilidades do módulo no contexto do sistema Op_Trader]
 
 **Funcionalidades principais:**
-- Abertura de posições (long/short)
-- Modificação de posições existentes (stop loss, take profit)
-- Encerramento de posições (parcial/total)
-- Suporte multimercado com precisão dinâmica por símbolo
-- Validação de regras de risco antes da execução
+- [Funcionalidade 1]
+- [Funcionalidade 2]
+- [Funcionalidade N]
 
 ---
 
 ## 2. Entradas
 
+> 📋 **VALIDAÇÃO**: Conferir se todos os parâmetros de `__init__` estão documentados aqui.
+
 | Parâmetro | Tipo | Obrigatório | Descrição | Exemplo |
 |-----------|------|-------------|-----------|---------|
-| symbol | str | Sim | Símbolo do ativo a ser negociado | "EURUSD" |
-| action | str | Sim | Ação a ser executada ("open", "modify", "close") | "open" |
-| position_type | str | Condicional | Tipo da posição ("long", "short") - obrigatório para "open" | "long" |
-| volume | float | Condicional | Volume da posição - obrigatório para "open" | 0.1 |
-| price | float | Não | Preço de execução (None para market price) | 1.08450 |
-| stop_loss | float | Não | Nível de stop loss | 1.08000 |
-| take_profit | float | Não | Nível de take profit | 1.09000 |
-| position_id | int | Condicional | ID da posição - obrigatório para "modify"/"close" | 12345 |
+| param1 | type | Sim/Não | Descrição do parâmetro | valor_exemplo |
 
 ---
 
 ## 3. Saídas
 
-| Nome | Tipo | Descrição | Exemplo |
-|------|------|-----------|---------|
-| success | bool | Status de sucesso da operação | True |
-| position_id | int | ID único da posição criada/modificada | 12345 |
-| executed_price | float | Preço real de execução | 1.08452 |
-| message | str | Mensagem descritiva do resultado | "Position opened successfully" |
-| timestamp | datetime | Timestamp da execução | 2025-06-04T10:30:15.123456 |
+> 📋 **VALIDAÇÃO**: Conferir se TODOS os métodos públicos estão listados aqui com assinaturas EXATAS do código.
+
+| Função/Método | Tipo Retorno | Descrição | Exemplo |
+|---------------|--------------|-----------|---------|
+| method_name | return_type | Descrição da saída | exemplo_uso |
+
+> ⚠️ **ATENÇÃO**: Sempre incluir `self` como primeiro parâmetro em métodos de classe.
 
 ---
 
-## 4. Exceções e Validações
+## 4. Performance e Complexidade
+
+> 📋 **VALIDAÇÃO**: Testar performance real antes de documentar. Não inventar números.
+
+| Método/Função | Complexidade Temporal | Complexidade Espacial | Observações |
+|---------------|----------------------|----------------------|-------------|
+| method_name | O(n) | O(1) | Notas sobre performance |
+
+**Benchmarks esperados:**
+- [Método]: ~X ms para dataset de Y registros *(testado em [data/ambiente])*
+- [Operação]: ~Z operações/segundo em hardware padrão *(especificar config)*
+
+**Limitações conhecidas:**
+- [Limitação 1 e como contornar]
+- [Limitação 2 e impacto esperado]
+
+---
+
+## 5. Exceções e Validações
+
+> 📋 **VALIDAÇÃO CRÍTICA**: Testar TODAS as exceções listadas aqui. Se não estão implementadas, NÃO documentar.
 
 | Caso | Exceção/Retorno | Descrição |
 |------|-----------------|-----------|
-| Symbol inválido | ValueError | Erro se símbolo não existe ou formato inválido |
-| Volume <= 0 | ValueError | Volume deve ser positivo para abertura |
-| Position não encontrada | PositionNotFoundError | ID da posição não existe para modify/close |
-| Margem insuficiente | InsufficientMarginError | Não há margem suficiente para a operação |
-| Mercado fechado | MarketClosedError | Tentativa de operar fora do horário |
-| Action inválida | ValueError | Action deve ser "open", "modify" ou "close" |
+| Caso de erro | ExceptionType | Descrição do erro e quando ocorre |
+
+> ⚠️ **REGRA**: Só documentar exceções que estão realmente implementadas no código.
 
 ---
 
-## 5. Docstring Padrão (Google Style)
+## 6. Dependências e Compatibilidade
 
-```python
-def manage_position(
-    self,
-    symbol: str,
-    action: str,
-    position_type: Optional[str] = None,
-    volume: Optional[float] = None,
-    price: Optional[float] = None,
-    stop_loss: Optional[float] = None,
-    take_profit: Optional[float] = None,
-    position_id: Optional[int] = None
-) -> Dict[str, Any]:
-    """
-    Gerencia posições de trading (abertura, modificação, encerramento).
-    
-    Args:
-        symbol (str): Símbolo do ativo (ex: "EURUSD", "USDJPY").
-        action (str): Ação a executar ("open", "modify", "close").
-        position_type (str, optional): Tipo da posição ("long", "short"). 
-            Obrigatório para action="open".
-        volume (float, optional): Volume da posição. 
-            Obrigatório para action="open".
-        price (float, optional): Preço de execução. None para market price.
-        stop_loss (float, optional): Nível de stop loss.
-        take_profit (float, optional): Nível de take profit.
-        position_id (int, optional): ID da posição. 
-            Obrigatório para action="modify"/"close".
-    
-    Returns:
-        Dict[str, Any]: Dicionário com resultado da operação contendo:
-            - success (bool): Status de sucesso
-            - position_id (int): ID da posição
-            - executed_price (float): Preço de execução
-            - message (str): Mensagem descritiva
-            - timestamp (datetime): Timestamp da operação
-    
-    Raises:
-        ValueError: Se parâmetros obrigatórios estão ausentes ou inválidos.
-        PositionNotFoundError: Se position_id não existe.
-        InsufficientMarginError: Se não há margem suficiente.
-        MarketClosedError: Se mercado está fechado.
-    
-    Example:
-        >>> pm = PositionManager()
-        >>> result = pm.manage_position("EURUSD", "open", "long", 0.1)
-        >>> print(result["success"])
-        True
-    """
-```
+> 📋 **VALIDAÇÃO**: Conferir imports no código real e testar versões mínimas.
 
----
+**Dependências obrigatórias:**
+- `biblioteca>=versão_minima` - Propósito da dependência
+- `src.modulo.submodulo` - Integração interna
 
-## 6. Exemplo de Uso
+**Dependências opcionais:**
+- `biblioteca_opcional>=versão` - Funcionalidade adicional
 
-```python
-from src.env.env_libs.execution.position_manager import PositionManager
-
-# Inicializar o gerenciador
-pm = PositionManager()
-
-# Exemplo 1 - Abertura de posição
-result = pm.manage_position(
-    symbol="EURUSD",
-    action="open",
-    position_type="long",
-    volume=0.1,
-    stop_loss=1.08000,
-    take_profit=1.09000
-)
-print(f"Posição aberta: {result['position_id']}")
-
-# Exemplo 2 - Modificação de posição
-result = pm.manage_position(
-    symbol="EURUSD",
-    action="modify",
-    position_id=12345,
-    stop_loss=1.08100,  # Novo stop loss
-    take_profit=1.09200  # Novo take profit
-)
-
-# Exemplo 3 - Encerramento de posição
-result = pm.manage_position(
-    symbol="EURUSD",
-    action="close",
-    position_id=12345
-)
-
-# Exemplo 4 - Tratamento de erros
-try:
-    result = pm.manage_position("INVALID", "open", "long", 0.1)
-except ValueError as e:
-    print(f"Erro de validação: {e}")
-except MarketClosedError as e:
-    print(f"Mercado fechado: {e}")
-```
-
----
-
-## 7. Regras de Negócio e Observações
-
-- **Precisão dinâmica:** O módulo detecta automaticamente a precisão de preço por símbolo (2-5 casas decimais)
-- **Validação de margem:** Sempre valida margem disponível antes de abrir posições
-- **Multimercado:** Suporta operação simultânea em múltiplos símbolos
-- **Thread-safe:** Implementa locks para operações concorrentes
-- **Auditoria completa:** Gera logs detalhados para todas as operações
-- **Market/Limit orders:** Suporta tanto ordens a mercado quanto com preço específico
-- **Horário de funcionamento:** Respeita horários de mercado por símbolo
-- **Risk management:** Integra com RiskManager para validações adicionais
-
----
-
-## 8. Edge Cases
-
-- **Volume zero ou negativo:** Rejeita com ValueError
-- **Preços inválidos:** Valida se preços estão dentro de ranges aceitáveis
-- **Position ID inexistente:** Retorna PositionNotFoundError específico
-- **Símbolo não configurado:** Verifica se símbolo existe na configuração
-- **Modificação de posição fechada:** Detecta e rejeita modificações em posições já encerradas
-- **Operações simultâneas:** Usa locks para evitar race conditions
-- **Conexão perdida:** Implementa retry automático com circuit breaker
-- **Valores None inesperados:** Valida todos os parâmetros obrigatórios
-
----
-
-## 9. Dependências
-
-**Depende de:**
-- `src/core/logger.py` - Sistema de logging padronizado
-- `src/core/state_manager.py` - Gerenciamento de estado das posições
-- `src/env/env_libs/risk/risk_manager.py` - Validações de risco
-- `src/utils/market_utils.py` - Utilitários de mercado e precisão
-- `src/config/trading_config.py` - Configurações de trading
+**Compatibilidade testada:**
+- Python: 3.8+
+- Pandas: 1.3.0+
+- NumPy: 1.20.0+
 
 **Não deve depender de:**
-- Interface gráfica ou elementos UI
-- Acesso direto ao banco de dados (usa State Manager)
-- Bibliotecas de machine learning
-- Conexões de rede diretas (usa abstrações)
+- [Módulos que devem ser evitados]
+- [Bibliotecas que criam acoplamento desnecessário]
 
 ---
 
-## 10. Checklist de Qualidade (conforme CONTRIBUTING.md)
+## 7. Docstring Padrão (Google Style)
 
-- [x] Código segue PEP 8 e convenções do projeto
-- [x] Imports absolutos utilizando `src.` como raiz
-- [x] Type hints em todas as funções públicas
-- [x] Docstrings padrão Google em todas as funções/classes públicas
-- [x] Testes para inputs válidos, edge cases e tratamento de erros
-- [x] Logging implementado (DEBUG para traces, INFO para operações, ERROR para falhas)
-- [x] Tratamento explícito de erros com exceções customizadas
-- [x] Nomenclatura consistente (snake_case para funções, PascalCase para classes)
-- [x] Cobertura de testes > 90% comprovada
-- [x] Exemplos de uso documentados e testados
+> ⚠️ **ATENÇÃO CRÍTICA**: Copiar assinaturas EXATAS do código, incluindo `self` e todos os parâmetros com defaults.
+
+```python
+class [NomeClasse]:
+    """
+    [Descrição da classe]
+
+    Métodos principais:
+      - method1: Descrição breve
+      - method2: Descrição breve
+
+    Args:
+        param (type): Descrição do parâmetro de inicialização.
+    """
+
+    def method_name(self, param1: type, param2: type = default) -> return_type:
+        """
+        [Descrição do método]
+        
+        Args:
+            param1 (type): Descrição do parâmetro.
+            param2 (type, optional): Descrição do parâmetro opcional. Defaults to default.
+        
+        Returns:
+            return_type: Descrição do retorno.
+        
+        Raises:
+            ExceptionType: Condição que causa a exceção.
+        
+        Example:
+            >>> instance = [NomeClasse]()
+            >>> result = instance.method_name(value1, value2)
+            >>> print(result)
+            expected_output
+        """
+```
+
+> 📋 **PROCESSO OBRIGATÓRIO**: 
+> 1. Copiar a assinatura exata do código
+> 2. Documentar TODOS os parâmetros opcionais com seus defaults
+> 3. Testar o exemplo fornecido
 
 ---
 
-## 11. Histórico
+## 8. Exemplos de Uso
+
+> 📋 **VALIDAÇÃO**: TESTAR todos os exemplos antes de documentar. Código que não roda é inaceitável.
+
+### Uso Básico
+```python
+from src.[caminho].[modulo] import [Classe]
+
+# Exemplo simples
+instance = [Classe]()
+result = instance.method_name(param1)
+```
+
+### Uso Avançado
+```python
+# Exemplo com múltiplos parâmetros
+instance = [Classe](debug=True)
+result = instance.advanced_method(param1, param2, optional_param=value)
+```
+
+### Uso em Pipeline
+```python
+# Exemplo de integração com outros módulos
+from src.pipeline import Pipeline
+
+pipeline = Pipeline()
+calculator = [Classe]()
+result = pipeline.process(data, calculator.method_name)
+```
+
+### Tratamento de Erros
+```python
+try:
+    result = instance.method_name(invalid_param)
+except SpecificError as e:
+    logger.error(f"Erro específico: {e}")
+except Exception as e:
+    logger.error(f"Erro inesperado: {e}")
+```
+
+> ⚠️ **REGRA**: Todos os exemplos devem ser testados e funcionais.
+
+---
+
+## 9. Configuração e Customização
+
+### Parâmetros de Configuração
+```python
+# Configuração via arquivo
+config = {
+    "parameter1": default_value,
+    "parameter2": alternative_value,
+    "debug_mode": False
+}
+
+instance = [Classe](config=config)
+```
+
+### Configuração Avançada
+```python
+# Configuração para diferentes ambientes
+DEV_CONFIG = {...}
+PROD_CONFIG = {...}
+
+instance = [Classe](config=PROD_CONFIG)
+```
+
+---
+
+## 10. Regras de Negócio e Observações
+
+- **Regra 1:** Descrição da regra e sua importância
+- **Comportamento especial:** Situações onde o módulo tem comportamento diferenciado
+- **Integração:** Como o módulo se integra com outros componentes
+- **Thread safety:** Se aplicável, comportamento em ambiente multi-thread
+- **Estado:** Como o módulo gerencia estado interno
+
+---
+
+## 11. Edge Cases e Cenários Especiais
+
+> 📋 **VALIDAÇÃO**: Testar todos os edge cases documentados.
+
+| Cenário | Comportamento Esperado | Observações |
+|---------|----------------------|-------------|
+| Input vazio | Retorna valor padrão ou exception | Como lidar |
+| Input muito grande | Performance degradada ou limitação | Thresholds |
+| Valores None/NaN | Tratamento específico | Estratégia adotada |
+
+**Cenários de stress:**
+- **Volume alto:** Como o módulo se comporta com grandes volumes de dados
+- **Chamadas frequentes:** Performance em uso intensivo
+- **Recursos limitados:** Comportamento em ambiente com pouca memória
+
+---
+
+## 12. Testes e Validação
+
+### Casos de Teste Obrigatórios
+- [x] Inputs válidos com valores típicos
+- [x] Inputs válidos com valores extremos
+- [x] Inputs inválidos com tratamento de erro
+- [x] Edge cases identificados
+- [x] Performance com datasets grandes
+- [x] Integração com outros módulos
+
+### Métricas de Qualidade
+- Cobertura de código: > 90%
+- Tempo de execução: < X ms para operação típica
+- Uso de memória: < Y MB para dataset padrão
+
+---
+
+## 13. Monitoramento e Logging
+
+### Níveis de Log
+- **DEBUG:** Traces detalhados de execução
+- **INFO:** Operações importantes e marcos
+- **WARNING:** Situações que merecem atenção
+- **ERROR:** Erros que impedem operação normal
+
+### Métricas Importantes
+- Tempo de execução por operação
+- Taxa de erro por tipo de input
+- Uso de recursos (CPU/memória)
+- Throughput (operações/segundo)
+
+---
+
+## 14. Checklist de Qualidade (conforme CONTRIBUTING.md)
+
+> ⚠️ **OBRIGATÓRIO**: Todos os itens devem ser verificados antes de finalizar a spec.
+
+### Validação de Código
+- [ ] Código segue PEP 8 e convenções do projeto
+- [ ] Imports absolutos utilizando `src.` como raiz
+- [ ] Type hints em todas as funções públicas
+- [ ] Nomenclatura consistente (snake_case para funções, PascalCase para classes)
+
+### Validação de Documentação
+- [ ] Docstrings padrão Google em todas as funções/classes públicas
+- [ ] **CRÍTICO**: Todas as assinaturas incluem `self` em métodos de classe
+- [ ] **CRÍTICO**: Todos os parâmetros opcionais estão documentados com defaults
+- [ ] Exemplos de uso documentados e **TESTADOS**
+
+### Validação de Qualidade
+- [ ] Testes para inputs válidos, edge cases e tratamento de erros
+- [ ] **CRÍTICO**: Todas as exceções documentadas estão implementadas
+- [ ] Logging implementado em níveis apropriados
+- [ ] Tratamento explícito de erros com exceções customizadas
+- [ ] Cobertura de testes > 90% comprovada
+- [ ] Performance documentada e **TESTADA**
+- [ ] Compatibilidade de versões especificada e **TESTADA**
+
+---
+
+## 15. Validação Final Spec-Código
+
+> 🔍 **CHECKLIST OBRIGATÓRIO**: Completar antes de finalizar a especificação.
+
+### Sincronização com Código
+- [ ] **Assinaturas**: Todas as assinaturas de métodos conferem exatamente com o código
+- [ ] **Parâmetros**: Todos os parâmetros opcionais estão documentados com valores default corretos
+- [ ] **Exceções**: Todas as exceções mencionadas estão realmente implementadas no código
+- [ ] **Imports**: Todas as dependências listadas estão nos imports do código
+- [ ] **Exemplos**: Todos os exemplos foram testados e funcionam
+
+### Validação de Qualidade
+- [ ] **Performance**: Benchmarks documentados foram medidos, não estimados
+- [ ] **Edge Cases**: Todos os cenários especiais foram testados
+- [ ] **Integração**: Exemplos de pipeline foram testados com outros módulos
+- [ ] **Documentação**: Revisão técnica foi feita por outro desenvolvedor
+
+### Aprovação Final
+- [ ] **Revisor técnico**: [Nome] - Data: [YYYY-MM-DD]
+- [ ] **Teste de integração**: Passou nos testes de CI/CD
+- [ ] **Documentação**: Sem inconsistências identificadas
+
+---
+
+## 16. Histórico
 
 | Data | Autor | Alteração |
 |------|-------|-----------|
-| 2025-06-04 | Developers Team | Criação inicial do módulo |
-| 2025-06-05 | Developers Team | Adição de suporte multimercado |
-| 2025-06-06 | Developers Team | Implementação de precisão dinâmica |
+| YYYY-MM-DD | Equipe Op_Trader | Criação inicial |
 
 ---
 
-## Como Usar Este Template
+## 🚨 PROCESSO OBRIGATÓRIO PARA USO DO TEMPLATE
 
-**Para criar uma nova especificação:**
+### Antes de Começar:
+1. ✅ **Código deve estar 100% implementado**
+2. ✅ **Testes básicos devem estar passando**
+3. ✅ **Revisor técnico deve estar designado**
 
-1. **Copie este arquivo** e renomeie para `SPEC_[nome_do_modulo].md`
-2. **Substitua "PositionManager"** pelo nome do seu módulo
-3. **Atualize a docstring** com o caminho e descrição corretos
-4. **Preencha as tabelas** com os parâmetros reais do seu módulo
-5. **Adapte os exemplos** para refletir o uso real
-6. **Revise as regras de negócio** específicas do módulo
-7. **Valide o checklist** antes de finalizar
-8. **Remova esta seção** na versão final
+### Durante o Preenchimento:
+1. 🔄 **Validar cada seção contra o código real**
+2. 🧪 **Testar todos os exemplos fornecidos**
+3. 📊 **Medir performance real, não estimar**
+4. 🔍 **Conferir assinaturas caráter por caráter**
 
-**Estrutura de pastas sugerida:**
+### Antes de Finalizar:
+1. ✅ **Completar checklist de validação final**
+2. 👥 **Revisão técnica obrigatória**
+3. 🧪 **Todos os exemplos testados e funcionais**
+4. 📋 **Nenhum item "TODO" ou placeholder restante**
+
+### Após Finalização:
+1. 🔄 **Manter sincronização com mudanças no código**
+2. 📈 **Atualizar benchmarks periodicamente**
+3. 🐛 **Reportar inconsistências encontradas**
+
+---
+
+## ⚠️ ARMADILHAS COMUNS A EVITAR
+
+### 🚫 **NUNCA FAÇA:**
+- Documentar exceções que não estão implementadas
+- Omitir `self` em assinaturas de métodos
+- Copiar exemplos sem testar
+- Inventar benchmarks de performance
+- Deixar parâmetros opcionais sem documentar
+- Finalizar sem revisão técnica
+
+### ✅ **SEMPRE FAÇA:**
+- Testar todos os exemplos
+- Validar assinaturas contra código
+- Medir performance real
+- Documentar todos os parâmetros
+- Implementar antes de documentar
+- Solicitar revisão técnica
+
+---
+
+## 📁 Estrutura de Pastas Sugerida
+
 ```
 docs/
 ├── specs/
-│   ├── SPEC_PositionManager.md
-│   ├── SPEC_RiskManager.md
+│   ├── SPEC_[modulo1].md
+│   ├── SPEC_[modulo2].md
 │   └── SPEC_[seu_modulo].md
 └── templates/
     └── SPEC_template.md (este arquivo)
 ```
 
-## ⚠️ Nota:
-Este template é genérico para qualquer módulo do projeto.  
-Adapte todas as seções, exemplos e tabelas conforme o fluxo, requisitos e contratos do módulo que você está especificando.
+---
+
+## 💡 DICAS PARA SUCESSO
+
+1. **Implemente primeiro, documente depois**
+2. **Teste tudo que documentar**
+3. **Peça revisão técnica sempre**
+4. **Mantenha sincronização constante**
+5. **Seja preciso, não criativo**
+6. **Valide contra o código real**
+7. **Não invente informações**
+
+Este template melhorado incorpora validações explícitas, checklists obrigatórios e processos que reduzem drasticamente a chance de inconsistências entre especificação e implementação.

@@ -51,60 +51,96 @@ op_trader/
 
 ---
 
+## 🗂️ Convenção Oficial — Tabelas de Referência, Desenvolvimento e Rastreamento
+
+> **Esta convenção é obrigatória para todo fluxo de contribuição, documentação e versionamento de SPECs, módulos e demandas do Op\_Trader.**
+
+O projeto utiliza três arquivos de meta-documentação localizados em `docs/meta/` para garantir **rastreabilidade, status** e organização de todas as especificações técnicas e funcionais:
+
+* [`REFERENCE_TABLE.md`](../docs/meta/REFERENCE_TABLE.md): Registro de tudo publicado/homologado, com link direto para o SPEC e status atualizado.
+* [`DEVELOP_TABLE.md`](../docs/meta/DEVELOP_TABLE.md): Registro de tudo em planejamento, desenvolvimento ou revisão, incluindo previsão, responsável e link do SPEC (quando aplicável).
+* [`TAGS_INDEX.md`](../docs/meta/TAGS_INDEX.md): Índice oficial de todas as tags de status (codificação, revisão, homologação etc.), para uso consistente.
+
+**Regras e obrigações:**
+
+* Sempre que houver nova demanda, alteração, SPEC ou módulo: registre ou atualize imediatamente nas tabelas correspondentes.
+* O campo de status deve estar sempre atualizado (≤ 24h úteis).
+* Nenhuma tag pode ser usada sem antes ser definida no `TAGS_INDEX.md`.
+* O rastreamento é **auditável** e obrigatório para merge, versionamento e auditoria.
+* Mudanças ou exceções devem ser justificadas em logs de auditoria.
+
+**Exemplo resumido do fluxo:**
+
+1. Criação de nova SPEC → registre em `DEVELOP_TABLE.md`.
+2. Avançou para homologação → mova para `REFERENCE_TABLE.md` com status e tags adequados.
+3. Surgiu nova tag → cadastre significado em `TAGS_INDEX.md`.
+
+Esta convenção faz parte do fluxo de CI/CD, revisão e compliance documental do Op\_Trader.
+
+---
+
 ## 🔧 Configuração do Ambiente
 
 ### Requisitos do Sistema
-- **Sistema Operacional**: Windows 10/11
-- **Python**: 3.10.x (obrigatório para MetaTrader 5 API)
-- **Conda**: Miniconda ou Anaconda
-- **MetaTrader 5**: Instalado e configurado
-- **CUDA**: Opcional, para aceleração GPU
-- **Docker**: Opcional, para containers
-- **IDE Recomendada**: VSCode ou Spyder
+
+* **Sistema Operacional**: Windows 10/11
+* **Python**: 3.10.x (obrigatório para MetaTrader 5 API)
+* **Conda**: Miniconda ou Anaconda
+* **MetaTrader 5**: Instalado e configurado
+* **CUDA**: Opcional, para aceleração GPU
+* **Docker**: Opcional, para containers
+* **IDE Recomendada**: VSCode ou Spyder
 
 ### Configuração Passo a Passo
 
 1. **Instale o Conda** (se não tiver):
+
    ```bash
    # Baixe e instale o Miniconda
    # https://docs.conda.io/en/latest/miniconda.html
    ```
 
 2. **Clone o repositório**:
+
    ```bash
    git clone <repository-url>
    cd op_trader
    ```
 
 3. **Crie o ambiente**:
+
    ```bash
    conda env create -f environment.yml
    conda activate op_trader
    ```
 
 4. **Verifique a instalação**:
+
    ```bash
    python --version     # Deve retornar Python 3.10.x
    python -c "import pandas, numpy, tensorflow; print('Dependências OK')"
    ```
 
 5. **Configure o IDE**:
+
    ```bash
    # Instale e configure seu editor favorito (VSCode recomendado para debugging Python)
    ```
 
 6. **Configure variáveis de ambiente**:
+
    ```bash
    cp .env.example .env
    # Edite .env com suas configurações (ex.: credenciais MT5)
+   ```
 
 ### Solução de Problemas Comuns
 
-| Problema | Solução |
-|----------|---------|
-| **Erro de dependências** | `conda clean -a && conda env create -f environment.yml --force` |
+| Problema                  | Solução                                                          |
+| ------------------------- | ---------------------------------------------------------------- |
+| **Erro de dependências**  | `conda clean -a && conda env create -f environment.yml --force`  |
 | **Python não encontrado** | Verificar se o ambiente está ativado: `conda activate op_trader` |
-| **Import errors** | `pip install -r requirements.txt` |
+| **Import errors**         | `pip install -r requirements.txt`                                |
 
 ---
 

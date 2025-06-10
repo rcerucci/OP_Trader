@@ -1,0 +1,36 @@
+[
+  {
+    "event": "reset",
+    "episode": 1,
+    "original_obs": [
+      0.0,
+      0.0
+    ],
+    "transformed_obs": [
+      0.0,
+      0.0
+    ],
+    "info": {
+      "reset": true,
+      "step": 0
+    },
+    "timestamp": "20250608_192339"
+  },
+  {
+    "event": "step",
+    "episode": 1,
+    "action": 0,
+    "original_obs": [
+      1.0,
+      1.0
+    ],
+    "transformed_obs": [
+      0.10000000149011612,
+      0.10000000149011612
+    ],
+    "reward": -1.0,
+    "terminated": false,
+    "truncated": false,
+    "info": {
+      "step": 1,
+      "custom_flag": 

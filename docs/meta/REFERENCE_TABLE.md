@@ -1,0 +1,83 @@
+# 📘 REFERENCE\_TABLE.md — Referência Pública de Módulos Op\_Trader (Definitiva)
+
+Tabela oficial com todos os métodos, funções e classes **públicas, estáveis e homologadas** do Op\_Trader.
+Inclui caminho de importação, assinatura real, retorno, descrição, status e link rastreável para o SPEC.
+
+> ⚠️ Todos os elementos aqui listados foram revisados, testados e estão @STABLE. Não existem entradas nulas.
+
+---
+
+## 🧱 Pipeline: UTILS
+
+| Import Path                       | Nome                        | Tipo     | Entradas / Assinatura                                       | Retorno        | Descrição                                        | Estado                               | SPEC                                                                   |                                                        |                                                              |
+| --------------------------------- | --------------------------- | -------- | ----------------------------------------------------------- | -------------- | ------------------------------------------------ | ------------------------------------ | ---------------------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------ |
+| `src/utils/logging_utils.py`      | `get_logger`                | function | \`name: str, cli\_level: str                                | int            | None = None\`                                    | `logging.Logger`                     | Logger estruturado e compatível                                        | `@STABLE`                                              | [📄 SPEC\_logging\_utils.md](../../docs/specs/SPEC_logging_utils.md) |
+| `src/utils/path_setup.py`         | `ensure_project_root`       | function | \`cur\_file: str                                            | Path\`         | `Path`                                           | Adiciona raiz do projeto ao sys.path | `@STABLE`                                                              | [📄 SPEC\_path\_setup.md](../../docs/specs/SPEC_path_setup.md) |                                                              |
+| `src/utils/file_saver.py`         | `get_timestamp`             | function | `None`                                                      | `str`          | Gera timestamp para versionamento                | `@STABLE`                            | [📄 SPEC\_file\_saver.md](../../docs/specs/SPEC_file_saver.md)                 |                                                        |                                                              |
+| `src/utils/file_saver.py`         | `build_filename`            | function | `prefix: str, suffix: str, asset: str, timeframe: str, ...` | `str`          | Cria nome de arquivo padronizado                 | `@STABLE`                            | [📄 SPEC\_file\_saver.md](../../docs/specs/SPEC_file_saver.md)                 |                                                        |                                                              |
+| `src/utils/file_saver.py`         | `save_dataframe`            | function | `df: DataFrame, filepath: str`                              | `None`         | Salva CSV com log e criação automática de pastas | `@STABLE`                            | [📄 SPEC\_file\_saver.md](../../docs/specs/SPEC_file_saver.md)                 |                                                        |                                                              |
+| `src/utils/vecnorm_loader.py`     | `save_vecnormalize`         | function | `env: VecNormalize, path: str`                              | `None`         | Salva objeto de normalização PPO                 | `@STABLE`                            | [📄 SPEC\_vecnorm\_loader.md](../../docs/specs/SPEC_vecnorm_loader.md)         |                                                        |                                                              |
+| `src/utils/vecnorm_loader.py`     | `load_vecnormalize`         | function | `path: str, env: VecEnv`                                    | `VecNormalize` | Restaura normalização para ambiente              | `@STABLE`                            | [📄 SPEC\_vecnorm\_loader.md](../../docs/specs/SPEC_vecnorm_loader.md)         |                                                        |                                                              |
+| `src/utils/data_cleaner.py`       | `DataCleaner`               | class    | `debug: bool = False`                                       | instância      | Limpeza e padronização de DataFrame de candles   | `@STABLE`                            | [📄 SPEC\_data\_cleaner.md](../../docs/specs/SPEC_data_cleaner.md)             |                                                        |                                                              |
+| `src/utils/data_shape_utils.py`   | `load_feature_list`         | function | `filepath: str`                                             | `list[str]`    | Lê lista de features do schema ativo             | `@STABLE`                            | [📄 SPEC\_data\_shape\_utils.md](../../docs/specs/SPEC_data_shape_utils.md)    |                                                        |                                                              |
+| `src/utils/data_shape_utils.py`   | `align_dataframe_to_schema` | function | `df: DataFrame, schema_cols: list[str]`                     | `DataFrame`    | Alinha colunas e tipos conforme schema           | `@STABLE`                            | [📄 SPEC\_data\_shape\_utils.md](../../docs/specs/SPEC_data_shape_utils.md)    |                                                        |                                                              |
+| `src/utils/feature_calculator.py` | `FeatureCalculator`         | class    | `debug: bool = False`                                       | instância      | Cálculo de indicadores técnicos e candles        | `@STABLE`                            | [📄 SPEC\_feature\_calculator.md](../../docs/specs/SPEC_feature_calculator.md) |                                                        |                                                              |
+| `src/utils/scaler_utils.py`       | `ScalerUtils`               | class    | `debug: bool = False`                                       | instância      | Normalização padrão com persistência auditável   | `@STABLE`                            | [📄 SPEC\_scaler\_utils.md](../../docs/specs/SPEC_scaler_utils.md)             |                                                        |                                                              |
+| `src/utils/mt5_connection.py`     | `connect_to_mt5`            | function | `cli_level: Optional[str] = None`                           | `bool`         | Conecta ao MetaTrader 5                          | `@STABLE`                            | [📄 SPEC\_mt5\_connection.md](../../docs/specs/SPEC_mt5_connection.md)         |                                                        |                                                              |
+| `src/utils/mt5_connection.py`     | `close_mt5_connection`      | function | `None`                                                      | `None`         | Encerra conexão MT5 de forma segura              | `@STABLE`                            | [📄 SPEC\_mt5\_connection.md](../../docs/specs/SPEC_mt5_connection.md)         |                                                        |                                                              |
+
+---
+
+## 🧱 Pipeline: ENV (ambientes, wrappers e acopladores)
+
+| Import Path                        | Nome                   | Tipo  | Entradas / Assinatura                                      | Retorno   | Descrição                                       | Estado    | SPEC                                                                         |
+| ---------------------------------- | ---------------------- | ----- | ---------------------------------------------------------- | --------- | ----------------------------------------------- | --------- | ---------------------------------------------------------------------------- |
+| `src/env/base_env.py`              | `BaseEnv`              | class | `observation_space, action_space, config=None, ...`        | instância | Ambiente base de RL, contrato de step/reset/log | `@STABLE` | [📄 SPEC\_base\_env.md](../../docs/specs/SPEC_base_env.md)                           |
+| `src/env/train_env_long.py`        | `TrainEnvLong`         | class | `config: dict, **kwargs`                                   | instância | Ambiente RL para treino principal (long only)   | `@STABLE` | [📄 SPEC\_train\_env\_long.md](../../docs/specs/SPEC_train_env_long.md)              |
+| `src/env/train_env_short.py`       | `TrainEnvShort`        | class | `config: dict, **kwargs`                                   | instância | Ambiente RL para treino (short only)            | `@STABLE` | [📄 SPEC\_train\_env\_short.md](../../docs/specs/SPEC_train_env_short.md)            |
+| `src/env/observation_wrapper.py`   | `ObservationWrapper`   | class | `env, log_dir: str = '', debug: bool = False`              | instância | Wrapper: processamento e log de observação      | `@STABLE` | [📄 SPEC\_observation\_wrapper.md](../../docs/specs/SPEC_observation_wrapper.md)     |
+| `src/env/normalization_wrapper.py` | `NormalizationWrapper` | class | `env, norm_type: str = 'vecnorm', log_dir: str = ''`       | instância | Wrapper: normalização auditável                 | `@STABLE` | [📄 SPEC\_normalization\_wrapper.md](../../docs/specs/SPEC_normalization_wrapper.md) |
+| `src/env/logging_wrapper.py`       | `LoggingWrapper`       | class | `env, log_dir: str = '', debug: bool = False`              | instância | Wrapper: logging estruturado e rastreável       | `@STABLE` | [📄 SPEC\_logging\_wrapper.md](../../docs/specs/SPEC_logging_wrapper.md)             |
+| `src/env/action_wrapper.py`        | `ActionWrapper`        | class | `env, action_space, action_map: dict, debug: bool = False` | instância | Wrapper: processamento/validação de ações       | `@STABLE` | [📄 SPEC\_action\_wrapper.md](../../docs/specs/SPEC_action_wrapper.md)               |
+| `src/env/reward_wrapper.py`        | `RewardWrapper`        | class | `env, reward_config: dict = None, debug: bool = False`     | instância | Wrapper: processamento/validação de rewards     | `@STABLE` | [📄 SPEC\_reward\_wrapper.md](../../docs/specs/SPEC_reward_wrapper.md)               |
+| `src/env/registry.py`              | `Registry`             | class | `name: str, registry_type: str = 'env'`                    | instância | Registro global de envs e wrappers              | `@STABLE` | [📄 SPEC\_registry.md](../../docs/specs/SPEC_registry.md)                            |
+| `src/env/env_factory.py`           | `EnvFactory`           | class | `config: dict = None, debug: bool = False`                 | instância | Fábrica e orquestrador de ambientes RL          | `@STABLE` | [📄 SPEC\_env\_factory.md](../../docs/specs/SPEC_env_factory.md)                     |
+
+---
+
+## 🧱 Pipeline: LOGGERS E GESTORES
+
+| Import Path                       | Nome              | Tipo  | Entradas / Assinatura                    | Retorno   | Descrição                      | Estado    | SPEC                                                               |
+| --------------------------------- | ----------------- | ----- | ---------------------------------------- | --------- | ------------------------------ | --------- | ------------------------------------------------------------------ |
+| `src/loggers/trade_logger.py`     | `TradeLogger`     | class | `log_dir: str = '', debug: bool = False` | instância | Logger estruturado para trade  | `@STABLE` | [📄 SPEC\_trade\_logger.md](../../docs/specs/SPEC_trade_logger.md)         |
+| `src/manager/position_manager.py` | `PositionManager` | class | `symbol: str, risk: float = 1.0`         | instância | Gestor de posições de trading  | `@STABLE` | [📄 SPEC\_position\_manager.md](../../docs/specs/SPEC_position_manager.md) |
+| `src/manager/risk_manager.py`     | `RiskManager`     | class | `config: dict, debug: bool = False`      | instância | Gestor de risco parametrizável | `@STABLE` | [📄 SPEC\_risk\_manager.md](../../docs/specs/SPEC_risk_manager.md)         |
+
+---
+
+## 🧱 Pipeline: REWARD, OBSERVATION & UTILS RL
+
+| Import Path                              | Nome                 | Tipo  | Entradas / Assinatura                      | Retorno   | Descrição                          | Estado    | SPEC                                                                     |
+| ---------------------------------------- | -------------------- | ----- | ------------------------------------------ | --------- | ---------------------------------- | --------- | ------------------------------------------------------------------------ |
+| `src/reward/reward_aggregator.py`        | `RewardAggregator`   | class | `reward_config: dict, debug: bool = False` | instância | Agregador e auditor de rewards     | `@STABLE` | [📄 SPEC\_reward\_aggregator.md](../../docs/specs/SPEC_reward_aggregator.md)     |
+| `src/observation/observation_builder.py` | `ObservationBuilder` | class | `schema: dict, debug: bool = False`        | instância | Builder customizável de observação | `@STABLE` | [📄 SPEC\_observation\_builder.md](../../docs/specs/SPEC_observation_builder.md) |
+
+---
+
+## 🧱 Pipeline: VALIDADORES
+
+| Import Path                    | Nome         | Tipo  | Entradas / Assinatura               | Retorno   | Descrição                            | Estado    | SPEC                                                  |
+| ------------------------------ | ------------ | ----- | ----------------------------------- | --------- | ------------------------------------ | --------- | ----------------------------------------------------- |
+| `src/validators/validators.py` | `Validators` | class | `schema: dict, debug: bool = False` | instância | Validadores de consistência e schema | `@STABLE` | [📄 SPEC\_validators.md](../../docs/specs/SPEC_validators.md) |
+
+---
+
+## 🧱 Pipeline: ACOPLAMENTO & PIPELINES
+
+| Import Path                   | Nome                             | Tipo     | Entradas / Assinatura  | Retorno | Descrição                                | Estado    | SPEC                                                                                            |
+| ----------------------------- | -------------------------------- | -------- | ---------------------- | ------- | ---------------------------------------- | --------- | ----------------------------------------------------------------------------------------------- |
+| `src/pipeline/acoplamento.py` | `acoplamento_pipeline_ambientes` | doc/spec | `ver README.md e SPEC` | —       | Guia de integração entre pipelines RL/SL | `@STABLE` | [📄 SPEC\_acoplamento\_pipeline\_ambientes.md](../../docs/specs/SPEC_acoplamento_pipeline_ambientes.md) |
+
+---
+
+🏷️ *Consulte [TAGS\_INDEX.md](TAGS_INDEX.md) para interpretação das TAGs.*
