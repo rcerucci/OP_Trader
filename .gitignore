@@ -27,6 +27,8 @@ __pycache__/
 # Logs e outputs locais
 logs/*
 !logs/.gitkeep
+reports/*
+!reports/.gitkeep
 
 # Pastas e arquivos de documentação temporária/interna
 docs/CURRENT_STRUCTURE.md

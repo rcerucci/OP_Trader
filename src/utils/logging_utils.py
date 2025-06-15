@@ -54,7 +54,7 @@ def load_log_level_from_config(section: str = "DIAGNOSIS", key: str = "log_level
     """
     config_path = ROOT_DIR / "config.ini"
     parser = configparser.ConfigParser()
-    parser.read(config_path)
+    parser.read(config_path, encoding='utf-8')
     if parser.has_section(section):
         level_str = parser.get(section, key, fallback="WARNING").strip().upper()
         return LOG_LEVELS.get(level_str, logging.WARNING)

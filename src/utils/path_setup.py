@@ -3,20 +3,22 @@
 """
 path_setup.py
 
-Módulo utilitário para garantir que a raiz do projeto esteja no sys.path.
-Essencial para garantir imports absolutos e evitar problemas em execução
-de scripts a partir de diferentes diretórios.
+Utilitário para garantir que a raiz do projeto esteja no sys.path para imports absolutos,
+buscando de forma robusta o root do projeto (onde está o .env ou pyproject.toml),
+independente do nível de profundidade de onde o script é executado.
+
+Padrão recomendado para projetos profissionais, pipelines, notebooks e testes.
 
 Exemplo de uso:
     from src.utils.path_setup import ensure_project_root
-
     ROOT_DIR = ensure_project_root(__file__)
 
-- Sempre preferir imports absolutos em todos os scripts do projeto.
-- Este módulo é fundamental para garantir compatibilidade com a estrutura src/.
+- Sempre preferir imports absolutos em todo o projeto.
+- Robustez total: encontra o root mesmo se estrutura de pastas mudar ou for chamado de subdiretório profundo.
+- Logging integrado (opcional), seguro para todos os contextos.
 
 Autor: Equipe Op_Trader
-Data: 2025-06-06
+Data: 2025-06-10 (versão robusta universal)
 """
 
 import sys
@@ -25,7 +27,10 @@ from typing import Union
 
 def ensure_project_root(cur_file: Union[str, Path]) -> Path:
     """
-    Garante que a raiz do projeto esteja no sys.path para permitir imports absolutos.
+    Garante que a raiz do projeto (onde está o .env ou pyproject.toml) esteja no sys.path
+    para permitir imports absolutos em qualquer contexto.
+
+    Sobe diretórios a partir do arquivo até encontrar o root do projeto.
 
     Args:
         cur_file (str | Path): Caminho do arquivo atual (__file__).
@@ -40,24 +45,22 @@ def ensure_project_root(cur_file: Union[str, Path]) -> Path:
         >>> from src.utils.path_setup import ensure_project_root
         >>> ROOT_DIR = ensure_project_root(__file__)
     """
-    try:
-        file_path = Path(cur_file).resolve()
-        # A raiz do projeto é 2 níveis acima do arquivo (ajustado à estrutura src/)
-        root = file_path.parents[2]
-    except Exception as e:
-        raise ValueError(
-            f"Falha ao identificar raiz do projeto a partir de '{cur_file}': {e}"
-        )
-
-    if str(root) not in sys.path:
-        sys.path.append(str(root))
-        # Logging opcional, se logging_utils já estiver carregado:
-        try:
-            from src.utils.logging_utils import get_logger
-            logger = get_logger("path_setup")
-            logger.debug(f"Adicionada raiz do projeto ao sys.path: {root}")
-        except Exception:
-            # logging_utils pode não estar disponível ainda na inicialização
-            pass
-
-    return root
+    file_path = Path(cur_file).resolve()
+    # Marcares possíveis de root: .env, pyproject.toml, .git
+    markers = [".env", "pyproject.toml", ".git"]
+    for parent in [file_path] + list(file_path.parents):
+        if any((parent / marker).exists() for marker in markers):
+            if str(parent) not in sys.path:
+                sys.path.append(str(parent))
+                # Logging opcional (se disponível)
+                try:
+                    from src.utils.logging_utils import get_logger
+                    logger = get_logger("path_setup")
+                    logger.debug(f"Raiz do projeto adicionada ao sys.path: {parent}")
+                except Exception:
+                    pass
+            return parent
+    raise ValueError(
+        f"Raiz do projeto não encontrada a partir de '{cur_file}'. "
+        "Certifique-se de que .env, pyproject.toml ou .git estejam no root."
+    )
